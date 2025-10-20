@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "assets-manager-webpart-client-side-solution",
+    "id": "b9cc8897-b5da-411a-b876-43a9369ebeb5",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "AssetsManagerWebpart description"
+      },
+      "longDescription": {
+        "default": "AssetsManagerWebpart description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "assets-manager-webpart Feature",
+        "description": "The feature that activates elements of the assets-manager-webpart solution.",
+        "id": "8e35f851-cb62-45e9-ba48-a01cead6be81",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/assets-manager-webpart.sppkg"
+  }
+}
