@@ -52,5 +52,3 @@ IT asset management solution that enables employees to view company equipment, t
 **Readme todo:**
 - Add secrets managment setup guide
 - Add SQL seed instructions
-
-test
