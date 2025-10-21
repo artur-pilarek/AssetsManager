@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using API.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models
@@ -28,8 +29,10 @@ namespace API.Models
         [MaxLength(1000)]
         public string Description { get; set; } = string.Empty;
 
+        [MaxLength(20)]
         public IssueStatus Status { get; set; } = IssueStatus.Open;
-        
+
+        [MaxLength(20)]
         public IssuePriority Priority { get; set; } = IssuePriority.Medium;
         
         public DateTime? ResolvedDate { get; set; }

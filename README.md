@@ -40,6 +40,7 @@ IT asset management solution that enables employees to view company equipment, t
 
 **API Setup:**
 1. cd API
+2. create .env with following content: DB_CONNECTION_STRING='your connection string'
 2. dotnet restore
 3. dotnet ef database update
 4. dotnet run

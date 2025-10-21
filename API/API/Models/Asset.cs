@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using API.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Models
 {
@@ -24,6 +25,7 @@ namespace API.Models
         [MaxLength(50)]
         public string? SerialNumber { get; set; }
 
+        [MaxLength(20)]
         public AssetStatus Status { get; set; } = AssetStatus.Available;
 
         [MaxLength(100)]
