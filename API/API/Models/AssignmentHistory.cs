@@ -26,6 +26,7 @@ namespace API.Models
 
         public DateTime? ReturnedDate { get; set; }
 
+
         [MaxLength(500)]
         public string? AssignmentNotes { get; set; }
 
