@@ -11,6 +11,8 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'AssetsManagerWebPartStrings';
 import AssetsManager from './components/AssetsManager';
 import { IAssetsManagerProps } from './components/IAssetsManagerProps';
+import { ApiClient } from '../../services/ApiClient';
+import { AssetService } from '../../services/AssetService';
 
 export interface IAssetsManagerWebPartProps {
   description: string;
@@ -22,6 +24,9 @@ export default class AssetsManagerWebPart extends BaseClientSideWebPart<IAssetsM
   private _environmentMessage: string = '';
 
   public render(): void {
+    const apiClient = new ApiClient(this.context.spHttpClient);
+    const assetService = new AssetService(apiClient);
+    
     const element: React.ReactElement<IAssetsManagerProps> = React.createElement(
       AssetsManager,
       {
@@ -29,7 +34,8 @@ export default class AssetsManagerWebPart extends BaseClientSideWebPart<IAssetsM
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        assetService: assetService
       }
     );
 

@@ -32,3 +32,9 @@ obj
 
 # Styles Generated Code
 *.scss.ts
+
+#Env
+.env
+
+#Ignore Serve.json
+config/serve.json

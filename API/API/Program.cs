@@ -6,6 +6,7 @@ using DotNetEnv;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OData.ModelBuilder;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Services.AddControllers()
     {
         {
             var edm = new ODataConventionModelBuilder();
+
+            // Convert response properties to camel case
+            edm.EnableLowerCamelCase();
+
             edm.EntitySet<Asset>("Assets");
             edm.EntitySet<IssueReport>("IssueReports");
             edm.EntitySet<AssignmentHistory>("AssignmentHistories");
@@ -30,6 +35,7 @@ builder.Services.AddControllers()
                 .SetMaxTop(100);
         }
     });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -45,6 +51,19 @@ builder.Services.AddScoped<IAssetRepository, AssetRepository>();
 builder.Services.AddScoped<IAssignmentHistoryRepository, AssignmentHistoryRepository>();
 builder.Services.AddScoped<IIssueReportRepository, IssueReportRepository>();
 
+// Cors Configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("TestingUrlPolicy", policy =>
+    {
+        policy.WithOrigins(
+                Environment.GetEnvironmentVariable("TESTING_URL") ?? ""
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -57,6 +76,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseCors("TestingUrlPolicy");
 
 app.UseAuthorization();
 
