@@ -9,8 +9,8 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'AssetsManagerWebPartStrings';
-import AssetsManager from './components/AssetsManager';
-import { IAssetsManagerProps } from './components/IAssetsManagerProps';
+import AssetsManager from './components/MainComponent/AssetsManager';
+import { IAssetsManagerProps } from './components/MainComponent/IAssetsManagerProps';
 import { ApiClient } from '../../services/ApiClient';
 import { AssetService } from '../../services/AssetService';
 

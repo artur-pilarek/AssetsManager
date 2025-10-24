@@ -1,4 +1,4 @@
-import { AssetService } from "../../../services/AssetService";
+import { AssetService } from "../../../../services/AssetService";
 
 export interface IAssetsManagerProps {
   description: string;
