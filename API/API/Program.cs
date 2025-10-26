@@ -5,14 +5,23 @@ using API.Repositories.Interfaces;
 using DotNetEnv;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OData.ModelBuilder;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers()
+    .AddJsonOptions(opt =>
+    {
+        // added to fix loop in change-assignment endpoint, better solution: todo: use DTO
+        opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        opt.JsonSerializerOptions.Converters
+            .Add(new JsonStringEnumConverter());        
+    })
     .AddOData(options =>
     {
         {
