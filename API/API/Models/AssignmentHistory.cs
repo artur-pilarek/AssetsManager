@@ -31,6 +31,6 @@ namespace API.Models
         public string? AssignmentNotes { get; set; }
 
         // Navigation
-        public Asset Asset { get; set; } = null!;
+        public Asset? Asset { get; set; }
     }
 }

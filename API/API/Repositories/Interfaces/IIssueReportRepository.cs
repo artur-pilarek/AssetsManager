@@ -4,6 +4,6 @@ namespace API.Repositories.Interfaces
 {
     public interface IIssueReportRepository : IQueryRepository<IssueReport>
     {
-        
+        Task<IssueReport> CreateIssueReportAsync(IssueReport issueReport);
     }
 }

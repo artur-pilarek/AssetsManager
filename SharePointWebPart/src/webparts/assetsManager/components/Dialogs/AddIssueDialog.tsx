@@ -3,27 +3,59 @@ import {
     Dialog, DialogType, DialogFooter,
     TextField, PrimaryButton, DefaultButton
 } from '@fluentui/react';
-import { AssetService } from '../../../../services/AssetService';
+import { IssueReportService } from '../../../../services/IssueReportService';
+import { MSGraphClientFactory } from '@microsoft/sp-http';
+import { IssuePriority, IssueStatus } from '../../../../models/Enums';
+import { IIssueReport } from '../../../../models';
 
 export interface IIssueReportDialogProps {
     assetId: number;
     isOpen: boolean;
     onClose: () => void;
-    assetService: AssetService;
+    onSave: (issueReport: IIssueReport) => void;
+    issueReportService: IssueReportService;
+    graphClientFactory: MSGraphClientFactory;
 }
 
 export const IssueReportDialog: React.FC<IIssueReportDialogProps> = ({
-    assetId, isOpen, onClose, assetService
+    assetId, isOpen, onClose, onSave, issueReportService, graphClientFactory
 }) => {
     const [description, setDescription] = React.useState('');
+    const [currentUser, setCurrentUser] = React.useState<any>(null);
+
+    const getCurrentUser = async () => {
+        let graphClient = await graphClientFactory.getClient("3");
+        try {
+            const user = await graphClient.api('/me').get();
+            return user;
+        } catch (err) {
+            console.error("Error fetching current user: ", err);
+        }
+    };
+
+    React.useEffect(() => {
+        const fetchUser = async () => {
+            const user = await getCurrentUser();
+            setCurrentUser(user);
+        };
+        fetchUser();
+    }, []);
 
     const handleSave = async () => {
         if (!description.trim()) return;
         console.log('Creating issue report for asset', assetId, 'with description:', description);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // todo implement endpoint call when ready
+        const issueReport = {
+            assetId,
+            description,
+            reportedByName: currentUser?.displayName || 'Unknown',
+            reportedByEmail: currentUser?.mail || 'Unknown',
+            issueDate: new Date().toISOString(),
+            status: IssueStatus.Open,
+            priority: IssuePriority.Medium
+        }
+        await issueReportService.create(issueReport);
+        onSave(issueReport);
         onClose();
-        return;
     };
 
     return (

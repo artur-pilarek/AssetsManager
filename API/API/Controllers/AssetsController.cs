@@ -38,13 +38,6 @@ namespace API.Controllers
             _data = data;
         }
 
-        [HttpGet]
-        [EnableQuery(PageSize = 100)]
-        public IQueryable<Asset> Get()
-        {
-            return _data.AsQueryable();
-        }
-
         [HttpPost]
         public async Task<ActionResult<Asset>> CreateAssetAsync(Asset newAsset)
         {
@@ -82,9 +75,9 @@ namespace API.Controllers
         }
 
         [HttpPut("change-assignment/{assetId}"), HttpPatch("change-assignment/{assetId}")]
-        public async Task<ActionResult<Asset>> ChangeAssetAssignmentAsync(int assetId, string? newOwnerEmail, string? newOwnerName, string? assignmentNotes)
+        public async Task<ActionResult<Asset>> ChangeAssetAssignmentAsync([FromRoute] int assetId, [FromBody] ChangeAssignmentDto payload )
         {
-            Asset? updatedAssetResult = await _data.ChangeAssetAssignmentAsync(assetId, newOwnerEmail, newOwnerName, assignmentNotes);
+            Asset? updatedAssetResult = await _data.ChangeAssetAssignmentAsync(assetId, payload);
             if (updatedAssetResult is null)
             {
                 return NotFound($"Asset with id {assetId} could not be found");

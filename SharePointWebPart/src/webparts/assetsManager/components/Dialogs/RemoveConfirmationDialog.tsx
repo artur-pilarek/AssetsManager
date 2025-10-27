@@ -3,6 +3,7 @@ import {
     PrimaryButton, DefaultButton
 } from '@fluentui/react';
 import * as React from 'react';
+import { IAsset } from '../../../../models';
 
 interface IRemoveConfirmationDialogProps {
     asset: {
@@ -12,6 +13,7 @@ interface IRemoveConfirmationDialogProps {
     isOpen: boolean;
     onClose: () => void;
     assetService: any;
+    onAssetChange: (asset: IAsset | number, action: 'update' | 'delete') => void;
 }
 
 
@@ -19,12 +21,12 @@ export const RemoveConfirmationDialog: React.FC<IRemoveConfirmationDialogProps> 
     asset,
     isOpen,
     onClose,
-    assetService
+    assetService,
+    onAssetChange
 }) => {
     const handleRemove = async () => {
-        console.log("Removing asset:", asset);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // todo implement endpoint call when ready
+        await assetService.delete(asset.id);
+        onAssetChange(asset.id, 'delete');
         onClose();
         return;
     }

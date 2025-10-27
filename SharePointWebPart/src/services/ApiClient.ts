@@ -1,21 +1,21 @@
 import {
-  SPHttpClient,
-  SPHttpClientResponse
+  HttpClient,
+  HttpClientResponse,
 } from '@microsoft/sp-http';
 
 export class ApiClient {
-  private spHttpClient: SPHttpClient;
+  private httpClient: HttpClient;
   private apiBase: string;
 
-  constructor(spHttpClient: SPHttpClient) {
-    this.spHttpClient = spHttpClient;
+  constructor(httpClient: HttpClient) {
+    this.httpClient = httpClient;
     this.apiBase = 'https://localhost:7244';
   }
 
   public async get<T>(endpoint: string): Promise<T> {
-    const response: SPHttpClientResponse = await this.spHttpClient.get(
+    const response: HttpClientResponse = await this.httpClient.get(
       `${this.apiBase}${endpoint}`,
-      SPHttpClient.configurations.v1
+      HttpClient.configurations.v1
     );
 
     if (!response.ok) {
@@ -27,9 +27,9 @@ export class ApiClient {
   }
 
   public async post<T>(endpoint: string, body?: unknown): Promise<T> {
-    const response = await this.spHttpClient.post(
+    const response = await this.httpClient.post(
       `${this.apiBase}${endpoint}`,
-      SPHttpClient.configurations.v1,
+      HttpClient.configurations.v1,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -46,9 +46,9 @@ export class ApiClient {
   }
 
   public async put<T>(endpoint: string, body?: unknown): Promise<T> {
-    const response = await this.spHttpClient.fetch(
+    const response = await this.httpClient.fetch(
       `${this.apiBase}${endpoint}`,
-      SPHttpClient.configurations.v1,
+      HttpClient.configurations.v1,
       {
         method: 'PUT',
         headers: {
@@ -66,9 +66,9 @@ export class ApiClient {
   }
 
   public async delete(endpoint: string): Promise<void> {
-    const response = await this.spHttpClient.fetch(
+    const response = await this.httpClient.fetch(
       `${this.apiBase}${endpoint}`,
-      SPHttpClient.configurations.v1,
+      HttpClient.configurations.v1,
       { method: 'DELETE' }
     );
 

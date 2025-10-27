@@ -1,7 +1,7 @@
 import { IssueStatus, IssuePriority } from './Enums';
 
 export interface IIssueReport {
-  id: number;
+  id?: number;
   assetId: number;
   reportedByEmail: string;
   reportedByName: string;

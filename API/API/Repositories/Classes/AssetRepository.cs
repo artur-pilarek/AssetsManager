@@ -53,7 +53,7 @@ namespace API.Repositories.Classes
 
         // wants name and email, because we're not implementing user model
         public async Task<Asset?> ChangeAssetAssignmentAsync(
-            int assetId, string? newOwnerEmail, string? newOwnerName, string? assignmentNotes)
+            int assetId, ChangeAssignmentDto payload)
         {
             var assetInDb = await _db.Assets.FindAsync(assetId);
             if (assetInDb is null) return null;
@@ -67,7 +67,7 @@ namespace API.Repositories.Classes
                 openHistory.AssignmentNotes = "Automatically closed on reassignment.";
             }
 
-            if (string.IsNullOrEmpty(newOwnerEmail))
+            if (string.IsNullOrEmpty(payload.newOwnerEmail))
             {
                 assetInDb.CurrentOwnerEmail = null;
                 assetInDb.CurrentOwnerName = null;
@@ -75,18 +75,18 @@ namespace API.Repositories.Classes
             }
             else
             {
-                assetInDb.CurrentOwnerEmail = newOwnerEmail;
-                assetInDb.CurrentOwnerName = newOwnerName;
+                assetInDb.CurrentOwnerEmail = payload.newOwnerEmail;
+                assetInDb.CurrentOwnerName = payload.newOwnerName;
                 assetInDb.Status = AssetStatus.Assigned;
 
                 // Add new record to AssignmentHistory
                 var newHistory = new AssignmentHistory
                 {
                     AssetId = assetInDb.Id,
-                    EmployeeEmail = newOwnerEmail,
-                    EmployeeName = newOwnerName ?? "Unknown",
+                    EmployeeEmail = payload.newOwnerEmail,
+                    EmployeeName = payload.newOwnerName ?? "Unknown",
                     AssignedDate = DateTime.UtcNow,
-                    AssignmentNotes = assignmentNotes ?? "Assigned via API",
+                    AssignmentNotes = payload.assignmentNotes ?? "Assigned via API",
                 };
                 await _db.AssignmentHistories.AddAsync(newHistory);
             }

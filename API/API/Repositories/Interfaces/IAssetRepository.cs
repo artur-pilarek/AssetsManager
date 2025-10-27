@@ -7,6 +7,6 @@ namespace API.Repositories.Interfaces
         Task<Asset> CreateAssetAsync(Asset newAsset);
         Task<Asset?> UpdateAssetAsync(Asset updatedAsset);
         Task DeleteAssetAsync(int assetId);
-        Task<Asset?> ChangeAssetAssignmentAsync(int assetId, string? newOwnerEmail, string? newOwnerName, string? assignmentNotes);
+        Task<Asset?> ChangeAssetAssignmentAsync(int assetId, ChangeAssignmentDto payload );
     }
 }

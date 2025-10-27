@@ -46,6 +46,6 @@ namespace API.Models
         public string? ResolutionNotes { get; set; }
 
         // Navigation
-        public Asset Asset { get; set; } = null!;
+        public Asset? Asset { get; set; }
     }
 }

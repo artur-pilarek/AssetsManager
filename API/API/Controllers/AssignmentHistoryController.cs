@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.OData.Routing.Controllers;
 
 namespace API.Controllers
 {
-    [Route("odata/controller/assignment-history")]
+    [Route("odata/[controller]")]
     [ApiController]
     public class AssignmentHistoryController : ODataController
     {

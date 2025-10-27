@@ -13,6 +13,8 @@ import AssetsManager from './components/MainComponent/AssetsManager';
 import { IAssetsManagerProps } from './components/MainComponent/IAssetsManagerProps';
 import { ApiClient } from '../../services/ApiClient';
 import { AssetService } from '../../services/AssetService';
+import { IssueReportService } from '../../services/IssueReportService';
+import { AssignmentHistoryService } from '../../services/AssignmentHistory';
 
 export interface IAssetsManagerWebPartProps {
   description: string;
@@ -24,9 +26,11 @@ export default class AssetsManagerWebPart extends BaseClientSideWebPart<IAssetsM
   private _environmentMessage: string = '';
 
   public render(): void {
-    const apiClient = new ApiClient(this.context.spHttpClient);
+    const apiClient = new ApiClient(this.context.httpClient);
     const assetService = new AssetService(apiClient);
-    
+    const issueReportService = new IssueReportService(apiClient);
+    const assignmentHistoryService = new AssignmentHistoryService(apiClient);
+
     const element: React.ReactElement<IAssetsManagerProps> = React.createElement(
       AssetsManager,
       {
@@ -35,7 +39,10 @@ export default class AssetsManagerWebPart extends BaseClientSideWebPart<IAssetsM
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        assetService: assetService
+        assetService: assetService,
+        issueReportService: issueReportService,
+        assignmentHistoryService: assignmentHistoryService,
+        graphClientFactory: this.context.msGraphClientFactory
       }
     );
 

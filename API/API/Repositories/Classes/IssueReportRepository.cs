@@ -16,5 +16,12 @@ namespace API.Repositories.Classes
         {
             return _db.IssueReports.AsQueryable();
         }
+
+        public async Task<IssueReport> CreateIssueReportAsync(IssueReport newIssueReport)
+        {
+            await _db.IssueReports.AddAsync(newIssueReport);
+            await _db.SaveChangesAsync();
+            return newIssueReport;
+        }
     }
 }

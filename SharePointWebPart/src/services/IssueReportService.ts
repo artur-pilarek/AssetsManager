@@ -8,12 +8,16 @@ export class IssueReportService {
     this.api = apiClient;
   }
 
-  async getAll(query?: string): Promise<IIssueReport[]> {
+  async getIssue(query?: string): Promise<IIssueReport[]> {
     const q = query ? query : '?$orderby=assetTag';
-    return await this.api.get<IIssueReport[]>(`/odata/IIssueReport${q}`);
+    return await this.api.get<IIssueReport[]>(`/odata/IssueReport${q}`);
   }
 
-  async getById(id: number): Promise<IIssueReport> {
-    return await this.api.get<IIssueReport>(`/odata/IIssueReport(${id})`);
+  async getByAssetId(assetId: number): Promise<IIssueReport[]> {
+    return await this.getIssue(`?$filter=assetId eq ${assetId}`);
+  }
+  
+  async create(issue: IIssueReport): Promise<IIssueReport> {
+    return await this.api.post<IIssueReport>('/api/IssueReportApi', issue);
   }
 }

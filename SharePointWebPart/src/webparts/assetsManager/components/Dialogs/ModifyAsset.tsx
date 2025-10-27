@@ -12,10 +12,11 @@ export interface IModifyAssetDialogProps {
     isOpen: boolean;
     onClose: () => void;
     assetService: AssetService;
+    onAssetChange: (asset: IAsset | number, action: 'update' | 'delete' | 'add') => void;
 }
 
 export const ModifyAssetDialog: React.FC<IModifyAssetDialogProps> = ({
-    asset, isOpen, onClose, assetService
+    asset, isOpen, onClose, assetService, onAssetChange
 }) => {
     const [form, setForm] = React.useState({ ...asset });
     const [saving, setSaving] = React.useState(false);
@@ -29,9 +30,8 @@ export const ModifyAssetDialog: React.FC<IModifyAssetDialogProps> = ({
 
     const handleSave = async () => {
         setSaving(true);
-        console.log('Saving modified asset:', form);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // todo implement endpoint call when ready
+        await assetService.update(form);
+        onAssetChange(form, 'update');
         setSaving(false);
         onClose();
         return;

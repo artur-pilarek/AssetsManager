@@ -12,25 +12,57 @@ import { ModifyAssetDialog } from '../Dialogs/ModifyAsset';
 import { ChangeAssignmentDialog } from '../Dialogs/ChangeAssignmentDialog';
 import { IssueReportDialog } from '../Dialogs/AddIssueDialog';
 import { RemoveConfirmationDialog } from '../Dialogs/RemoveConfirmationDialog';
+import { MSGraphClientFactory } from '@microsoft/sp-http';
+import { IssueReportService } from '../../../../services/IssueReportService';
+import { IIssueReport } from '../../../../models/IIssueReport';
+import { AssignmentHistoryService } from '../../../../services/AssignmentHistory';
 
 export interface IAssetDetailsPanelProps {
     asset: IAsset;
     isOpen: boolean;
     onDismiss: () => void;
     assetService: AssetService;
+    assignmentHistoryService?: AssignmentHistoryService;
+    onAssetChange: (asset: IAsset | number, action: 'update' | 'delete' | 'add') => void;
+    graphClientFactory: MSGraphClientFactory;
+    issueReportService: IssueReportService;
 }
 
 export const AssetDetailsPanel: React.FC<IAssetDetailsPanelProps> = ({
     asset,
     isOpen,
     onDismiss,
-    assetService
+    assetService,
+    issueReportService,
+    assignmentHistoryService,
+    onAssetChange,
+    graphClientFactory
 }) => {
 
     const [showModify, setShowModify] = React.useState(false);
     const [showAssign, setShowAssign] = React.useState(false);
     const [showIssue, setShowIssue] = React.useState(false);
     const [showRemove, setShowRemove] = React.useState(false);
+    const [issues, setIssues] = React.useState<IIssueReport[]>([]);
+    const [assignmentHistory, setAssignmentHistory] = React.useState<any[]>([]);
+
+    const fetchIssues = async () => {
+        const fetchedIssues = await issueReportService.getByAssetId(asset.id);
+        setIssues(fetchedIssues);
+    };
+
+    const fetchAssignmentHistory = async () => {
+        const fetchedHistory = await assignmentHistoryService!.getByAssetId(asset.id);
+        setAssignmentHistory(fetchedHistory);
+    };
+
+    React.useEffect(() => {
+        Promise.all([
+            fetchIssues(),
+            fetchAssignmentHistory()
+        ]);
+    }, [asset]);
+
     return (
         <Panel
             isOpen={isOpen}
@@ -49,7 +81,26 @@ export const AssetDetailsPanel: React.FC<IAssetDetailsPanelProps> = ({
                 <Text><b>Owner:</b> {asset.currentOwnerName ?? '-'}</Text>
                 <Text><b>Purchase Date:</b> {asset.purchaseDate ? new Date(asset.purchaseDate).toLocaleDateString() : '-'}</Text>
                 <Text><b>Notes:</b> {asset.notes ?? '-'}</Text>
-
+                <Text><b>Issue Reports:</b></Text>
+                {issues.length > 0 ? (
+                    <Stack tokens={{ childrenGap: 5 }}>
+                        {issues.map((issue) => (
+                            <Text key={issue.id}>- {issue.description} (Reported on: {new Date(issue.issueDate).toLocaleDateString()} by {issue.reportedByName})</Text>
+                        ))}
+                    </Stack>
+                ) : (
+                    <Text>No issue reports for this asset.</Text>
+                )}
+                <Text><b>Assignment History:</b></Text>
+                {assignmentHistory.length > 0 ? (
+                    <Stack tokens={{ childrenGap: 5 }}>
+                        {assignmentHistory.map((history) => (
+                            <Text key={history.id}>- {history.employeeName} (From: {new Date(history.assignedDate).toLocaleDateString()})</Text>
+                        ))}
+                    </Stack>
+                ) : (
+                    <Text>No assignment history for this asset.</Text>
+                )}
                 <Stack tokens={{ childrenGap: 8 }}>
                     <PrimaryButton
                         text="Modify Asset"
@@ -118,33 +169,40 @@ export const AssetDetailsPanel: React.FC<IAssetDetailsPanelProps> = ({
                     />
                 </Stack>
 
-                <ModifyAssetDialog
+                {showModify && <ModifyAssetDialog
                     asset={asset}
                     isOpen={showModify}
                     onClose={() => setShowModify(false)}
                     assetService={assetService}
-                />
+                    onAssetChange={onAssetChange}
+                />}
 
-                <ChangeAssignmentDialog
+                {showAssign && <ChangeAssignmentDialog
                     asset={asset}
-                    users={[]} // todo: load users from service
                     isOpen={showAssign}
                     onClose={() => setShowAssign(false)}
                     assetService={assetService}
-                />
+                    graphClientFactory={graphClientFactory}
+                    onAssetChange={onAssetChange}
+                />}
 
-                <IssueReportDialog
+                {showIssue && <IssueReportDialog
                     assetId={asset.id}
                     isOpen={showIssue}
                     onClose={() => setShowIssue(false)}
-                    assetService={assetService}
-                />
-                <RemoveConfirmationDialog
+                    onSave={(newIssueReport) => {
+                        setIssues([...issues, newIssueReport]);
+                    }}
+                    issueReportService={issueReportService}
+                    graphClientFactory={graphClientFactory}
+                />}
+                {showRemove && <RemoveConfirmationDialog
                     asset={{ id: asset.id, assetTag: asset.assetTag }}
                     isOpen={showRemove}
                     onClose={() => setShowRemove(false)}
                     assetService={assetService}
-                />
+                    onAssetChange={onAssetChange}
+                />}
             </Stack>
         </Panel>
     );
