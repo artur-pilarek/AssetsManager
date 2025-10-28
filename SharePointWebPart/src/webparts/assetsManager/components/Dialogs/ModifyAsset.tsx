@@ -28,7 +28,7 @@ export const ModifyAssetDialog: React.FC<IModifyAssetDialogProps> = ({
         setForm({ ...form, [name]: value });
     };
 
-    const handleSave = async () => {
+    const handleSave: () => Promise<void> = async () => {
         setSaving(true);
         await assetService.update(form);
         onAssetChange(form, 'update');

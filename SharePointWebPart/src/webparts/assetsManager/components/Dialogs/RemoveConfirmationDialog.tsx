@@ -4,6 +4,7 @@ import {
 } from '@fluentui/react';
 import * as React from 'react';
 import { IAsset } from '../../../../models';
+import { AssetService } from '../../../../services/AssetService';
 
 interface IRemoveConfirmationDialogProps {
     asset: {
@@ -12,7 +13,7 @@ interface IRemoveConfirmationDialogProps {
     };
     isOpen: boolean;
     onClose: () => void;
-    assetService: any;
+    assetService: AssetService;
     onAssetChange: (asset: IAsset | number, action: 'update' | 'delete') => void;
 }
 
@@ -24,7 +25,7 @@ export const RemoveConfirmationDialog: React.FC<IRemoveConfirmationDialogProps> 
     assetService,
     onAssetChange
 }) => {
-    const handleRemove = async () => {
+    const handleRemove: () => Promise<void> = async () => {
         await assetService.delete(asset.id);
         onAssetChange(asset.id, 'delete');
         onClose();

@@ -14,12 +14,13 @@ import { AssetDetailsPanel } from '../AssetDetailsPanel/AssetDetailsPanel';
 import { CreateAssetDialog } from '../Dialogs/CreateAssetDialog';
 import { MSGraphClientFactory } from '@microsoft/sp-http';
 import { IssueReportService } from '../../../../services/IssueReportService';
+import { AssignmentHistoryService } from '../../../../services/AssignmentHistory';
 
 export interface IAssetsListProps {
     assetService: AssetService;
     graphClientFactory: MSGraphClientFactory;
     issueReportService: IssueReportService;
-    assignmentHistoryService: any;
+    assignmentHistoryService: AssignmentHistoryService;
 }
 
 export const AssetsList: React.FC<IAssetsListProps> = ({ assetService, graphClientFactory, issueReportService, assignmentHistoryService }) => {
@@ -42,7 +43,7 @@ export const AssetsList: React.FC<IAssetsListProps> = ({ assetService, graphClie
             });
     }, [assetService]);
 
-    const handleAssetChange = (asset: IAsset | number, action: 'update' | 'delete' | 'add') => {
+    const handleAssetChange: (asset: IAsset | number, action: 'update' | 'delete' | 'add') => void = (asset, action) => {
         console.log('Handling asset change:', asset, action);
         if (action === 'delete') {
             setAssets((prev) => prev.filter((a) => a.id !== asset));
@@ -133,8 +134,7 @@ export const AssetsList: React.FC<IAssetsListProps> = ({ assetService, graphClie
         []
     );
 
-    const onDismiss = () => {
-        console.log("Panel closed trigger");
+    const onDismiss: () => void = () => {
         setIsPanelOpen(false);
         setSelectedAsset(null);
     };

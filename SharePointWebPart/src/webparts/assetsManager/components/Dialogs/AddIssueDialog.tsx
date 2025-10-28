@@ -17,14 +17,20 @@ export interface IIssueReportDialogProps {
     graphClientFactory: MSGraphClientFactory;
 }
 
+interface IUser {
+    id: string;
+    displayName: string;
+    mail: string;
+}
+
 export const IssueReportDialog: React.FC<IIssueReportDialogProps> = ({
     assetId, isOpen, onClose, onSave, issueReportService, graphClientFactory
 }) => {
     const [description, setDescription] = React.useState('');
-    const [currentUser, setCurrentUser] = React.useState<any>(null);
+    const [currentUser, setCurrentUser] = React.useState<IUser | null>(null);
 
-    const getCurrentUser = async () => {
-        let graphClient = await graphClientFactory.getClient("3");
+    const getCurrentUser: () => Promise<IUser | null> = async () => {
+        const graphClient = await graphClientFactory.getClient("3");
         try {
             const user = await graphClient.api('/me').get();
             return user;
@@ -34,16 +40,21 @@ export const IssueReportDialog: React.FC<IIssueReportDialogProps> = ({
     };
 
     React.useEffect(() => {
-        const fetchUser = async () => {
+        const fetchUser: () => Promise<void> = async () => {
             const user = await getCurrentUser();
             setCurrentUser(user);
         };
-        fetchUser();
+        fetchUser()
+            .then(() => {
+                console.log("Fetched current user successfully");
+            })
+            .catch((error) => {
+                console.error("Error fetching current user:", error);
+            });
     }, []);
 
-    const handleSave = async () => {
+    const handleSave: () => Promise<void> = async () => {
         if (!description.trim()) return;
-        console.log('Creating issue report for asset', assetId, 'with description:', description);
         const issueReport = {
             assetId,
             description,

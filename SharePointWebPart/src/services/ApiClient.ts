@@ -9,7 +9,7 @@ export class ApiClient {
 
   constructor(httpClient: HttpClient) {
     this.httpClient = httpClient;
-    this.apiBase = 'https://localhost:7244';
+    this.apiBase = 'https://assetsmanagerapi.azurewebsites.net';
   }
 
   public async get<T>(endpoint: string): Promise<T> {

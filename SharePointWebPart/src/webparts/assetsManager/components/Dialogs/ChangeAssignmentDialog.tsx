@@ -21,7 +21,11 @@ interface IUser {
     id: string;
     displayName: string;
     mail: string;
-};
+}
+
+interface IUsersResponse {
+    value: IUser[];
+}
 
 export const ChangeAssignmentDialog: React.FC<IChangeAssignmentDialogProps> = ({
     asset, isOpen, onClose, assetService, graphClientFactory, onAssetChange
@@ -30,20 +34,7 @@ export const ChangeAssignmentDialog: React.FC<IChangeAssignmentDialogProps> = ({
     const [users, setUsers] = React.useState<IDropdownOption[]>([]);
     const [assignmentNote, setAssignmentNote] = React.useState<string>('');
 
-    React.useEffect(() => {
-        const fetchUsers = async () => {
-            const members = await getUsers();
-            const options = members.value.map((member: any) => ({
-                key: member.id,
-                text: member.displayName,
-                data: { mail: member.mail }
-            }));
-            setUsers(options);
-        }
-        fetchUsers();
-    }, []);
-
-    const getUsers = async (): Promise<any> => {
+    const getUsers = async (): Promise<IUsersResponse> => {
         let graphClient: MSGraphClientV3 = (await graphClientFactory.getClient("3"));
         try {
             graphClient = await graphClientFactory.getClient("3");
@@ -51,10 +42,31 @@ export const ChangeAssignmentDialog: React.FC<IChangeAssignmentDialogProps> = ({
         } catch (err) {
             console.error("Error fetching users: ", err);
         }
-        return [];
+        return { value: [] };
     }
 
-    const handleSave = async (forceSave: boolean = false) => {
+    React.useEffect(() => {
+        const fetchUsers: () => Promise<void> = async () => {
+            const users = await getUsers();
+            const options: IDropdownOption[] = users.value.map((user: IUser) => ({
+                key: user.id,
+                text: user.displayName,
+                data: { mail: user.mail }
+            }));
+            setUsers(options);
+        };
+        fetchUsers()
+            .then(() => {
+                console.log("Fetched users successfully");
+            })
+            .catch((error) => {
+                console.error("Error fetching users:", error);
+            });
+    }, []);
+
+
+
+    const handleSave: (forceSave?: boolean) => Promise<void> = async (forceSave: boolean = false) => {
         if (selectedUser || forceSave) {
             console.log('assigning user', selectedUser, 'to asset', asset);
             await assetService.changeAssignment(asset.id, selectedUser?.data?.mail ?? '', selectedUser?.text ?? '', assignmentNote);

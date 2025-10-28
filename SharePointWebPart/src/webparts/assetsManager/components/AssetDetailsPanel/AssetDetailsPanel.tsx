@@ -6,7 +6,7 @@ import {
     Stack,
     Text
 } from '@fluentui/react';
-import { IAsset } from '../../../../models';
+import { IAsset, IAssignmentHistory } from '../../../../models';
 import { AssetService } from '../../../../services/AssetService';
 import { ModifyAssetDialog } from '../Dialogs/ModifyAsset';
 import { ChangeAssignmentDialog } from '../Dialogs/ChangeAssignmentDialog';
@@ -44,14 +44,14 @@ export const AssetDetailsPanel: React.FC<IAssetDetailsPanelProps> = ({
     const [showIssue, setShowIssue] = React.useState(false);
     const [showRemove, setShowRemove] = React.useState(false);
     const [issues, setIssues] = React.useState<IIssueReport[]>([]);
-    const [assignmentHistory, setAssignmentHistory] = React.useState<any[]>([]);
+    const [assignmentHistory, setAssignmentHistory] = React.useState<IAssignmentHistory[]>([]);
 
-    const fetchIssues = async () => {
+    const fetchIssues: () => Promise<void> = async () => {
         const fetchedIssues = await issueReportService.getByAssetId(asset.id);
         setIssues(fetchedIssues);
     };
 
-    const fetchAssignmentHistory = async () => {
+    const fetchAssignmentHistory: () => Promise<void> = async () => {
         const fetchedHistory = await assignmentHistoryService!.getByAssetId(asset.id);
         setAssignmentHistory(fetchedHistory);
     };
@@ -60,7 +60,11 @@ export const AssetDetailsPanel: React.FC<IAssetDetailsPanelProps> = ({
         Promise.all([
             fetchIssues(),
             fetchAssignmentHistory()
-        ]);
+        ]).then(() => {
+            console.log("Fetched asset issues and assignment history successfully");
+        }).catch((error) => {
+            console.error("Error fetching asset details:", error);
+        });
     }, [asset]);
 
     return (
